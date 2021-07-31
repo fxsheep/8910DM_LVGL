@@ -1100,7 +1100,7 @@ static void prvReadFlash(fdlEngine_t *fdl, fdlPacket_t *pkt, fdlContext_t *d)
     }
     else
     {
-        fdlEngineSendRespNoData(fdl, BSL_REP_INVALID_CMD);
+        fdlEngineSendRespData(fdl, BSL_REP_READ_FLASH, addr, size);
         return;
     }
 }
