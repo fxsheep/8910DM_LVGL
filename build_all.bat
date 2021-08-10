@@ -254,7 +254,7 @@ move /y %version_path%\prepack\%BUILD_TARGET%.elf %version_path%\
 move /y %version_path%\prepack\%BUILD_TARGET%.map %version_path%\
 move /y %version_path%\prepack\%BUILD_TARGET%*%BUILD_RELEASE_TYPE%.pac %version_path%\
 rename %version_path%\%BUILD_TARGET%*%BUILD_RELEASE_TYPE%.pac %BUILD_TARGET%_%buildver%.pac
-xcopy .\target.cmake %update_path%\prepack\
+xcopy /y .\target.cmake %update_path%\prepack\
 xcopy /y .\hex\examples\*.* %version_path%\app\
 
 set ql_prepack_opt=N
