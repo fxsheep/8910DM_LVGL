@@ -38,9 +38,44 @@
 #include "cfw_nb_nv_api.h"
 #endif
 
+#define readl(addr) (*(volatile unsigned int *)(addr))
+#define writel(val, addr) (*(volatile unsigned int *)(addr) = (val))
+
 #ifdef CONFIG_SOC_6760
 void nbiot_SetNetworkStatusInd(uint32_t switch_flag);
 #endif
+
+void atCmdHandleMemRead(atCommand_t *cmd)
+{
+    if (cmd->type == AT_CMD_SET)
+    {
+        bool paramok = true;
+        uint32_t *addr;
+        uint32_t critical, val;
+        char rsp[32];
+        const char *param = atParamStr(cmd->params[0], &paramok);
+        if (!paramok || cmd->param_count != 1)
+            RETURN_CME_ERR(cmd->engine, ERR_AT_CME_PARAM_INVALID);
+        addr = (uint32_t *)strtol(param, NULL, 16);
+
+        critical = osiEnterCritical();
+        val = readl(addr);
+        osiExitCritical(critical);
+
+        sprintf(rsp, "%s: 0x%lx", "+MEMREAD", val);
+        atCmdRespInfoText(cmd->engine, rsp);
+        atCmdRespOK(cmd->engine);
+    }
+    else if (cmd->type == AT_CMD_TEST)
+    {
+        atCmdRespInfoText(cmd->engine, "+MEMREAD: \"ADDR\"");
+        atCmdRespOK(cmd->engine);
+    }
+    else
+    {
+        atCmdRespCmeError(cmd->engine, ERR_AT_CME_OPERATION_NOT_SUPPORTED);
+    }
+}
 
 void atCmdHandleSWJTAG(atCommand_t *cmd)
 {

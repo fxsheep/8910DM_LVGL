@@ -461,6 +461,7 @@ S0,             atCmdHandleS0, 0            // (6.3.8) Automatic answer
 ^PMSTOP,        atCmdHandlePMSTOP, 0        // Stop PM core
 ^FORCEDNLD,     atCmdHandleFORCEDNLD, 0     // Reset to force download mode
 +SPREF,         atCmdHandleSPREF, 0         // Reset to force download mode by Download tools
++MEMREAD,       atCmdHandleMemRead, 0
 #ifndef CONFIG_SOC_6760
 ^TRACECTRL,     atCmdHandleTrace, AT_CON_NOT_CALIB_MODE         // Enable/disable trace
 +SYSNV,         atCmdHandleSYSNV, 0         // read/write sysnv
