@@ -74,7 +74,6 @@ target_sources(${target} PRIVATE
     lpa/at_cmd_lpa.c
 )
 
-if (NOT CONFIG_QUEC_PROJECT_FEATURE)
 target_sources(${target} PRIVATE gc/at_cmd_fupdate.c)
 target_sources(${target} PRIVATE myinfo/at_cmd_myinfo.c)
 target_sources(${target} PRIVATE fs/at_cmd_fs.c)
@@ -91,7 +90,7 @@ target_sources_if(CONFIG_AT_DM_LWM2M_SUPPORT THEN ${target} PRIVATE dm/at_cmd_dm
 target_sources_if(CONFIG_AT_OCEANCONNECT_SUPPORT THEN ${target} PRIVATE lwm2m/at_cmd_oceanconnect.c)
 target_sources_if(CONFIG_AT_PAHO_MQTT_SUPPORT THEN ${target} PRIVATE mqtt/at_cmd_pahomqtt.c)
 target_sources_if(CONFIG_AT_CAMERA_SUPPORT THEN ${target} PRIVATE cam/at_cmd_camera.c)
-endif()
+
 target_sources_if(CONFIG_SOC_8910 THEN ${target} PRIVATE bt/at_cmd_bt.c)
 
 target_sources_if(CONFIG_AT_BLUEU_VERIFY_SUPPORT THEN ${target} PRIVATE bt/at_cmd_blueu_verify.c)
