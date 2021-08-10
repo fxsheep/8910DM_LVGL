@@ -77,6 +77,47 @@ void atCmdHandleMemRead(atCommand_t *cmd)
     }
 }
 
+void atCmdHandleMemWrite(atCommand_t *cmd)
+{
+    if (cmd->type == AT_CMD_SET)
+    {
+        bool paramok = true;
+        uint32_t *addr;
+        uint32_t critical, data;
+
+        if (cmd->param_count != 2)
+            goto param_err;
+        const char *param1 = atParamStr(cmd->params[0], &paramok);
+        if (!paramok)
+            goto param_err;
+        const char *param2 = atParamStr(cmd->params[1], &paramok);
+        if (!paramok)
+            goto param_err;
+
+        addr = (uint32_t *)strtol(param1, NULL, 16);
+        data = strtol(param2, NULL, 16);
+
+        critical = osiEnterCritical();
+        writel(data, addr);
+        osiExitCritical(critical);
+
+        atCmdRespOK(cmd->engine);
+
+        if (!paramok)
+        param_err:
+            RETURN_CME_ERR(cmd->engine, ERR_AT_CME_PARAM_INVALID);
+    }
+    else if (cmd->type == AT_CMD_TEST)
+    {
+        atCmdRespInfoText(cmd->engine, "+MEMWRITE: \"ADDR\",\"VALUE\"");
+        atCmdRespOK(cmd->engine);
+    }
+    else
+    {
+        atCmdRespCmeError(cmd->engine, ERR_AT_CME_OPERATION_NOT_SUPPORTED);
+    }
+}
+
 void atCmdHandleSWJTAG(atCommand_t *cmd)
 {
     if (cmd->type == AT_CMD_SET)
