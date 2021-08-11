@@ -10,6 +10,7 @@
  * without further testing or modification.
  */
 
+#include "cmsis_core.h"
 #include "osi_log.h"
 #include "osi_mem.h"
 #include "osi_sysnv.h"
@@ -49,7 +50,7 @@ void atCmdHandleMemRead(atCommand_t *cmd)
 {
     if (cmd->type == AT_CMD_SET)
     {
-        bool paramok = true;
+        bool mmu, paramok = true;
         uint32_t *addr;
         uint32_t critical, val;
         char rsp[32];
@@ -59,7 +60,12 @@ void atCmdHandleMemRead(atCommand_t *cmd)
         addr = (uint32_t *)strtol(param, NULL, 16);
 
         critical = osiEnterCritical();
+        mmu = __get_SCTLR() & 1;
+        __set_SCTLR(__get_SCTLR() & ~1);
+        __ISB();
         val = readl(addr);
+        __set_SCTLR(__get_SCTLR() | mmu);
+        __ISB();
         osiExitCritical(critical);
 
         sprintf(rsp, "%s: 0x%lx", "+MEMREAD", val);
@@ -81,7 +87,7 @@ void atCmdHandleMemWrite(atCommand_t *cmd)
 {
     if (cmd->type == AT_CMD_SET)
     {
-        bool paramok = true;
+        bool mmu, paramok = true;
         uint32_t *addr;
         uint32_t critical, data;
 
@@ -98,7 +104,12 @@ void atCmdHandleMemWrite(atCommand_t *cmd)
         data = strtol(param2, NULL, 16);
 
         critical = osiEnterCritical();
+        mmu = __get_SCTLR() & 1;
+        __set_SCTLR(__get_SCTLR() & ~1);
+        __ISB();
         writel(data, addr);
+        __set_SCTLR(__get_SCTLR() | mmu);
+        __ISB();
         osiExitCritical(critical);
 
         atCmdRespOK(cmd->engine);
